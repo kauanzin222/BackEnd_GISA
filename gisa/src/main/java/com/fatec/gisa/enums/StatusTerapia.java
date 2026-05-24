@@ -1,0 +1,5 @@
+package com.fatec.gisa.enums;
+
+public enum StatusTerapia {
+    AGENDADA, CONCLUIDA, FALTA_JUSTIFICADA, FALTA_INJUSTIFICADA, CANCELADA_PROFISSIONAL, EM_ATENDIMENTO
+}

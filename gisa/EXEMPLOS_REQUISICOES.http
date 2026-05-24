@@ -1,0 +1,360 @@
+"""
+Exemplos de Requisições HTTP para a API GISA
+Base URL: http://localhost:8080/gisa-api
+"""
+
+### ============================================
+### 1. PACIENTES
+### ============================================
+
+### Criar Paciente (POST)
+POST http://localhost:8080/gisa-api/api/pacientes
+Content-Type: application/json
+
+{
+  "nome": "Maria Silva",
+  "cpf": "12345678901",
+  "dataNascimento": "2005-03-20",
+  "sexo": "F",
+  "celular": "11987654321",
+  "estadoCivil": "SOLTEIRO",
+  "statusCadastro": "ATIVO",
+  "statusPaciente": "DESLIGADO",
+  "tipoEntrada": "PRIMEIRA_VEZ",
+  "dataCadastro": "2024-05-20",
+  "convenio": false
+}
+
+### Listar Todos os Pacientes (GET)
+GET http://localhost:8080/gisa-api/api/pacientes
+
+### Buscar Paciente por ID (GET)
+GET http://localhost:8080/gisa-api/api/pacientes/1
+
+### Buscar Paciente por CPF (GET)
+GET http://localhost:8080/gisa-api/api/pacientes/cpf/12345678901
+
+### Atualizar Paciente (PUT)
+PUT http://localhost:8080/gisa-api/api/pacientes/1
+Content-Type: application/json
+
+{
+  "nome": "Maria Silva Santos",
+  "statusPaciente": "ATIVO"
+}
+
+### Deletar Paciente (DELETE)
+DELETE http://localhost:8080/gisa-api/api/pacientes/1
+
+---
+
+### ============================================
+### 2. PROFISSIONAIS
+### ============================================
+
+### Criar Profissional (POST)
+POST http://localhost:8080/gisa-api/api/profissionais
+Content-Type: application/json
+
+{
+  "nome": "Dr. João Santos",
+  "cpf": "98765432100",
+  "dataNascimento": "1985-07-10",
+  "sexo": "M",
+  "celular": "11999999999",
+  "estadoCivil": "CASADO",
+  "statusCadastro": "ATIVO",
+  "cargo": {
+    "idCargo": 1
+  }
+}
+
+### Listar Todos os Profissionais (GET)
+GET http://localhost:8080/gisa-api/api/profissionais
+
+### Buscar por CPF (GET)
+GET http://localhost:8080/gisa-api/api/profissionais/cpf/98765432100
+
+---
+
+### ============================================
+### 3. ESPECIALISTAS
+### ============================================
+
+### Criar Especialista (POST)
+POST http://localhost:8080/gisa-api/api/especialistas
+Content-Type: application/json
+
+{
+  "nome": "Dra. Ana Paula",
+  "cpf": "55555555555",
+  "dataNascimento": "1980-05-15",
+  "sexo": "F",
+  "celular": "11988888888",
+  "estadoCivil": "SOLTEIRO",
+  "statusCadastro": "ATIVO",
+  "registroConselho": "CRP/12345",
+  "cargo": {
+    "idCargo": 2
+  },
+  "especialidades": [
+    {"idEspecialidade": 1},
+    {"idEspecialidade": 2}
+  ]
+}
+
+### Listar Todos os Especialistas (GET)
+GET http://localhost:8080/gisa-api/api/especialistas
+
+---
+
+### ============================================
+### 4. TERAPIAS
+### ============================================
+
+### Criar Terapia (POST)
+POST http://localhost:8080/gisa-api/api/terapias
+Content-Type: application/json
+
+{
+  "data": "2024-05-20",
+  "descricao": "Sessão de psicoterapia individual",
+  "statusTerapia": "AGENDADA",
+  "modalidade": {
+    "idModalidade": 1
+  },
+  "pacientes": [
+    {"idCadastro": 1}
+  ],
+  "especialistas": [
+    {"idCadastro": 3}
+  ]
+}
+
+### Listar Todas as Terapias (GET)
+GET http://localhost:8080/gisa-api/api/terapias
+
+### Atualizar Terapia (PUT)
+PUT http://localhost:8080/gisa-api/api/terapias/1
+Content-Type: application/json
+
+{
+  "statusTerapia": "REALIZADA",
+  "descricao": "Sessão realizada com sucesso"
+}
+
+---
+
+### ============================================
+### 5. PRONTUÁRIOS
+### ============================================
+
+### Criar Prontuário (POST)
+POST http://localhost:8080/gisa-api/api/prontuarios
+Content-Type: application/json
+
+{
+  "alergias": "Penicilina, Lactose",
+  "comorbidade": "Hipertensão, Diabetes Tipo 2",
+  "mobilidade": "Limitada - usar cadeira de rodas"
+}
+
+### Listar Todos os Prontuários (GET)
+GET http://localhost:8080/gisa-api/api/prontuarios
+
+### Buscar Prontuário por ID (GET)
+GET http://localhost:8080/gisa-api/api/prontuarios/1
+
+---
+
+### ============================================
+### 6. ESPECIALIDADES
+### ============================================
+
+### Criar Especialidade (POST)
+POST http://localhost:8080/gisa-api/api/especialidades
+Content-Type: application/json
+
+{
+  "nome": "Fisioterapia",
+  "descricao": "Tratamento físico e recuperação motora"
+}
+
+### Listar Todas as Especialidades (GET)
+GET http://localhost:8080/gisa-api/api/especialidades
+
+---
+
+### ============================================
+### 7. CIDs (Classificação de Doenças)
+### ============================================
+
+### Criar CID (POST)
+POST http://localhost:8080/gisa-api/api/cids
+Content-Type: application/json
+
+{
+  "codigoCID": 1,
+  "descricao": "I10 - Hipertensão Essencial"
+}
+
+### Listar Todos os CIDs (GET)
+GET http://localhost:8080/gisa-api/api/cids
+
+---
+
+### ============================================
+### 8. CARGOS
+### ============================================
+
+### Criar Cargo (POST)
+POST http://localhost:8080/gisa-api/api/cargos
+Content-Type: application/json
+
+{
+  "nomeCargo": "Psicólogo Clínico",
+  "cbo": {
+    "codigoCBO": 1
+  }
+}
+
+### Listar Todos os Cargos (GET)
+GET http://localhost:8080/gisa-api/api/cargos
+
+---
+
+### ============================================
+### 9. ENDEREÇOS
+### ============================================
+
+### Criar Endereço (POST)
+POST http://localhost:8080/gisa-api/api/enderecos
+Content-Type: application/json
+
+{
+  "cep": "01311100",
+  "rua": "Avenida Paulista",
+  "numero": "1000",
+  "complemento": "Apto 101",
+  "bairro": "Bela Vista",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "pessoa": {
+    "idCadastro": 1
+  }
+}
+
+---
+
+### ============================================
+### 10. USUÁRIOS
+### ============================================
+
+### Criar Usuário (POST)
+POST http://localhost:8080/gisa-api/api/usuarios
+Content-Type: application/json
+
+{
+  "pessoa": {
+    "idCadastro": 1
+  },
+  "perfil": {
+    "idPerfil": 1
+  },
+  "senha": "senha_hash_segura"
+}
+
+### Listar Todos os Usuários (GET)
+GET http://localhost:8080/gisa-api/api/usuarios
+
+---
+
+### ============================================
+### 11. PERFIS
+### ============================================
+
+### Criar Perfil (POST)
+POST http://localhost:8080/gisa-api/api/perfis
+Content-Type: application/json
+
+{
+  "nome": "ADMIN",
+  "permissoes": [
+    {"idPermissao": 1},
+    {"idPermissao": 2},
+    {"idPermissao": 3}
+  ]
+}
+
+### Listar Todos os Perfis (GET)
+GET http://localhost:8080/gisa-api/api/perfis
+
+### Buscar Perfil por Nome (GET)
+GET http://localhost:8080/gisa-api/api/perfis/nome/ADMIN
+
+---
+
+### ============================================
+### 12. PERMISSÕES
+### ============================================
+
+### Criar Permissão (POST)
+POST http://localhost:8080/gisa-api/api/permissoes
+Content-Type: application/json
+
+{
+  "nome": "GERENCIAR_PACIENTES",
+  "descricao": "Permissão para gerenciar informações de pacientes"
+}
+
+### Listar Todas as Permissões (GET)
+GET http://localhost:8080/gisa-api/api/permissoes
+
+---
+
+### ============================================
+### 13. ESCOLAS
+### ============================================
+
+### Criar Escola (POST)
+POST http://localhost:8080/gisa-api/api/escolas
+Content-Type: application/json
+
+{
+  "nome": "Escola Municipal Santos Dumont",
+  "tipoEscola": "PUBLICA",
+  "telefone": "1133334444"
+}
+
+### Listar Todas as Escolas (GET)
+GET http://localhost:8080/gisa-api/api/escolas
+
+---
+
+### ============================================
+### 14. MODALIDADES
+### ============================================
+
+### Criar Modalidade (POST)
+POST http://localhost:8080/gisa-api/api/modalidades
+Content-Type: application/json
+
+{
+  "nome": "INDIVIDUAL",
+  "descricao": "Atendimento individual"
+}
+
+### Listar Todas as Modalidades (GET)
+GET http://localhost:8080/gisa-api/api/modalidades
+
+---
+
+### ============================================
+### Notas Importantes
+### ============================================
+
+1. IDs são gerados automaticamente pelo banco de dados (sequences)
+2. Certifique-se de respeitar os relacionamentos entre entidades
+3. Use apenas JSONpara requisições
+4. Respostas bem-sucedidas retornam HTTP 200 ou 201
+5. Erros retornam HTTP 400, 404 ou 500 com detalhes
