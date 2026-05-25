@@ -23,7 +23,7 @@ public class Usuario {
     )
     private Set<Perfil> perfis;
 
-    @Column(name = "SENHA", nullable = false, length = 255)
+    @Column(name = "SENHA")
     private String senha;
 
     // Getters and Setters
