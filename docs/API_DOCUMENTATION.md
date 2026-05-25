@@ -120,13 +120,6 @@ http://localhost:8080/gisa-api
 - **PUT** `/api/escolas/{id}` - Atualizar escola
 - **DELETE** `/api/escolas/{id}` - Deletar escola
 
-### 16. MODALIDADES
-- **POST** `/api/modalidades` - Criar nova modalidade
-- **GET** `/api/modalidades` - Listar todas as modalidades
-- **GET** `/api/modalidades/{id}` - Buscar modalidade por ID
-- **PUT** `/api/modalidades/{id}` - Atualizar modalidade
-- **DELETE** `/api/modalidades/{id}` - Deletar modalidade
-
 ### 17. CBOs (Classificação Brasileira de Ocupações)
 - **POST** `/api/cbos` - Criar novo CBO
 - **GET** `/api/cbos` - Listar todos os CBOs

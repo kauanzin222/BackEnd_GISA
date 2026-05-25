@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import com.fatec.gisa.enums.Modalidade;
 import com.fatec.gisa.enums.StatusTerapia;
 import jakarta.persistence.*;
 
