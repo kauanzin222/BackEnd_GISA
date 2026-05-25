@@ -3,7 +3,7 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tab_CBO")
+@Table(name = "TAB_CBO")
 public class CBO {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cbo_seq")

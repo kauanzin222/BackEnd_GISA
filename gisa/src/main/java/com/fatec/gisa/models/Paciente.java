@@ -8,22 +8,21 @@ import com.fatec.gisa.enums.TipoEntrada;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "PACIENTE")
+@Table(name = "TAB_PACIENTE")
 public class Paciente extends Pessoa {
     @ManyToMany
     @JoinTable(
         name = "PACIENTE_CID",
-        joinColumns = @JoinColumn(name = "ID_CADASTRO", referencedColumnName = "ID_CADASTRO"),
-        inverseJoinColumns = @JoinColumn(name = "CODIGO_CID", referencedColumnName = "CODIGO_CID")
+        joinColumns = @JoinColumn(name = "IDPACIENTE"),
+        inverseJoinColumns = @JoinColumn(name = "CODIGOCID")
     )
     private List<CID> cids;
 
-    @OneToOne
-    @JoinColumn(name = "ID_PRONTUARIO", referencedColumnName = "ID_PRONTUARIO")
+    @OneToOne(mappedBy = "paciente")
     private Prontuario prontuario;
 
     @ManyToOne
-    @JoinColumn(name = "ID_ESCOLA", referencedColumnName = "ID_ESCOLA")
+    @JoinColumn(name = "IDESCOLA")
     private Escola escola;
 
     @Enumerated(EnumType.STRING)

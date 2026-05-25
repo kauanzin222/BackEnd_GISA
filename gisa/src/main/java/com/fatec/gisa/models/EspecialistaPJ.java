@@ -3,18 +3,18 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ESPECIALISTA_PJ")
+@Table(name = "TAB_ESPECIALISTAPJ")
 public class EspecialistaPJ extends Especialista {
-    @Column(name = "CNPJ", unique = true, length = 20)
+    @Column(name = "CNPJ")
     private String CNPJ;
 
-    @Column(name = "RAZAO_SOCIAL", length = 150)
+    @Column(name = "RAZAOSOCIAL")
     private String razaoSocial;
 
-    @Column(name = "NOME_FANTASIA", length = 150)
+    @Column(name = "NOMEFANTASIA")
     private String nomeFantasia;
 
-    @Column(name = "INSCRICAO_ESTADUAL", length = 20)
+    @Column(name = "INSCRICAOESTADUAL")
     private String inscricaoEstadual;
 
     // Getters and Setters

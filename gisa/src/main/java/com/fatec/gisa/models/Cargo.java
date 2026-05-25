@@ -3,19 +3,19 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "CARGO")
+@Table(name = "tTAB_CARGO")
 public class Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cargo_seq")
     @SequenceGenerator(name = "cargo_seq", sequenceName = "SEQ_CARGO", allocationSize = 1)
-    @Column(name = "ID_CARGO")
+    @Column(name = "IDCARGO")
     private Integer idCargo;
 
     @ManyToOne
-    @JoinColumn(name = "CODIGO_CBO", referencedColumnName = "CODIGO_CBO")
+    @JoinColumn(name = "CODIGOCBO")
     private CBO cbo;
 
-    @Column(name = "NOME_CARGO", nullable = false, length = 100)
+    @Column(name = "NOMECARGO", nullable = false, length = 100)
     private String nomeCargo;
 
     // Getters and Setters

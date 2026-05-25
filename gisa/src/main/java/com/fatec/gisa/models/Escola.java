@@ -4,7 +4,7 @@ import com.fatec.gisa.enums.TipoEscola;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tab_ESCOLA")
+@Table(name = "TAB_ESCOLA")
 public class Escola {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "escola_seq")

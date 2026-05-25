@@ -6,18 +6,20 @@ import jakarta.persistence.*;
 @Table(name = "PRONTUARIO")
 public class Prontuario {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prontuario_seq")
-    @SequenceGenerator(name = "prontuario_seq", sequenceName = "SEQ_PRONTUARIO", allocationSize = 1)
-    @Column(name = "ID_PRONTUARIO")
-    private Integer idProntuario;
+    private Integer id;
 
-    @Column(name = "ALERGIAS", length = 255)
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "IDPACIENTE")
+    private Paciente paciente;
+
+    @Column(name = "ALERGIAS")
     private String alergias;
 
-    @Column(name = "COMORBIDADE", length = 255)
+    @Column(name = "COMORBIDADE")
     private String comorbidade;
 
-    @Column(name = "MOBILIDADE", length = 100)
+    @Column(name = "MOBILIDADE")
     private String mobilidade;
 
     // Getters and Setters
