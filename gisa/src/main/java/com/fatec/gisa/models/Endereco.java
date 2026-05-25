@@ -1,40 +1,46 @@
 package com.fatec.gisa.models;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ENDERECO")
+@Table(name = "TAB_ENDERECO")
 public class Endereco {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "endereco_seq")
     @SequenceGenerator(name = "endereco_seq", sequenceName = "SEQ_ENDERECO", allocationSize = 1)
-    @Column(name = "ID_ENDERECO")
+    @Column(name = "IDENDERECO")
     private Integer idEndereco;
 
-    @Column(name = "CEP", length = 10)
+    @Column(name = "CEP")
     private String cep;
 
-    @Column(name = "RUA", length = 100)
+    @Column(name = "RUA")
     private String rua;
 
-    @Column(name = "CIDADE", length = 100)
+    @Column(name = "CIDADE")
     private String cidade;
 
-    @Column(name = "BAIRRO", length = 100)
+    @Column(name = "BAIRRO")
     private String bairro;
 
-    @Column(name = "ESTADO", length = 2)
+    @Column(name = "ESTADO")
     private String estado;
 
-    @Column(name = "NUMERO", length = 10)
+    @Column(name = "NUMERO")
     private String numero;
 
-    @Column(name = "COMPLEMENTO", length = 100)
+    @Column(name = "COMPLEMENTO")
     private String complemento;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_CADASTRO", referencedColumnName = "ID_CADASTRO")
-    private Pessoa pessoa;
+    @ManyToMany
+    @JoinTable(
+        name = "ENDERECO_PESSOA",
+        joinColumns = @JoinColumn(name = "IDENDERECO"),
+        inverseJoinColumns = @JoinColumn(name = "IDCADASTRO")
+    )
+    private Set<Pessoa> moradores;
 
     // Getters and Setters
     public Integer getIdEndereco() {
@@ -101,11 +107,11 @@ public class Endereco {
         this.complemento = complemento;
     }
 
-    public Pessoa getPessoa() {
-        return pessoa;
-    }
+	public Set<Pessoa> getMoradores() {
+		return moradores;
+	}
 
-    public void setPessoa(Pessoa pessoa) {
-        this.pessoa = pessoa;
-    }
+	public void setMoradores(Set<Pessoa> moradores) {
+		this.moradores = moradores;
+	} 
 }

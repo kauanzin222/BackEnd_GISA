@@ -3,18 +3,18 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "PERMISSAO")
+@Table(name = "tab_PERMISSAO")
 public class Permissao {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "permissao_seq")
     @SequenceGenerator(name = "permissao_seq", sequenceName = "SEQ_PERMISSAO", allocationSize = 1)
-    @Column(name = "ID_PERMISSAO")
+    @Column(name = "IDPERMISSAO")
     private Integer idPermissao;
 
-    @Column(name = "NOME", nullable = false, unique = true, length = 100)
+    @Column(name = "NOME")
     private String nome;
 
-    @Column(name = "DESCRICAO", length = 255)
+    @Column(name = "DESCRICAO")
     private String descricao;
 
     // Getters and Setters

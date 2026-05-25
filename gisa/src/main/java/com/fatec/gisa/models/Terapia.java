@@ -2,17 +2,18 @@ package com.fatec.gisa.models;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import com.fatec.gisa.enums.StatusTerapia;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "TERAPIA")
+@Table(name = "tab_TERAPIA")
 public class Terapia {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "terapia_seq")
     @SequenceGenerator(name = "terapia_seq", sequenceName = "SEQ_TERAPIA", allocationSize = 1)
-    @Column(name = "ID_TERAPIA")
+    @Column(name = "IDTERAPIA")
     private Integer idTerapia;
 
     @Column(name = "DATA")
@@ -22,20 +23,20 @@ public class Terapia {
     private String descricao;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "STATUS_TERAPIA", length = 20)
+    @Column(name = "STATUSTERAPIA", length = 20)
     private StatusTerapia statusTerapia;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_MODALIDADE", referencedColumnName = "ID_MODALIDADE")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "MODALIDADE")
     private Modalidade modalidade;
 
     @ManyToMany
     @JoinTable(
-        name = "TERAPIA_PACIENTE",
-        joinColumns = @JoinColumn(name = "ID_TERAPIA", referencedColumnName = "ID_TERAPIA"),
-        inverseJoinColumns = @JoinColumn(name = "ID_CADASTRO", referencedColumnName = "ID_CADASTRO")
+        name = "PACIENTE_TERAPIA",
+        joinColumns = @JoinColumn(name = "IDTERAPIA"),
+        inverseJoinColumns = @JoinColumn(name = "IDPACIENTE")
     )
-    private List<Paciente> pacientes;
+    private Set<Paciente> pacientes;
 
     @ManyToMany
     @JoinTable(
@@ -86,11 +87,11 @@ public class Terapia {
         this.modalidade = modalidade;
     }
 
-    public List<Paciente> getPacientes() {
+    public Set<Paciente> getPacientes() {
         return pacientes;
     }
 
-    public void setPacientes(List<Paciente> pacientes) {
+    public void setPacientes(Set<Paciente> pacientes) {
         this.pacientes = pacientes;
     }
 

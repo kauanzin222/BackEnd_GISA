@@ -1,14 +1,14 @@
 package com.fatec.gisa.models;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 import com.fatec.gisa.enums.EstadoCivil;
 import com.fatec.gisa.enums.StatusCadastro;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "PESSOA")
+@Table(name = "tab_PESSOA")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Pessoa {
     @Id
@@ -17,33 +17,33 @@ public class Pessoa {
     @Column(name = "ID_CADASTRO")
     protected Integer idCadastro;
 
-    @Column(name = "CPF", unique = true, length = 11)
+    @Column(name = "CPF")
     private String cpf;
 
-    @Column(name = "NOME", nullable = false, length = 100)
+    @Column(name = "NOME")
     private String nome;
 
-    @Column(name = "DATA_NASCIMENTO")
+    @Column(name = "DATANASCIMENTO")
     private LocalDate dataNascimento;
 
-    @Column(name = "SEXO", length = 1)
+    @Column(name = "SEXO")
     private char sexo;
 
-    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
-    private List<Endereco> enderecos;
+    @OneToMany(mappedBy = "moradores")
+    private Set<Endereco> enderecos;
 
-    @Column(name = "CELULAR", length = 20)
+    @Column(name = "CELULAR")
     private String celular;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ESTADO_CIVIL", length = 20)
+    @Column(name = "ESTADOCIVIL")
     private EstadoCivil estadoCivil;
 
-    @Column(name = "NUM_CNS", length = 20)
+    @Column(name = "NUMCNS")
     private String numCNS;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "STATUS_CADASTRO", length = 20)
+    @Column(name = "STATUSCADASTRO")
     private StatusCadastro statusCadastro;
 
     // Getters and Setters
@@ -87,11 +87,11 @@ public class Pessoa {
         this.sexo = sexo;
     }
 
-    public List<Endereco> getEnderecos() {
+    public Set<Endereco> getEnderecos() {
         return enderecos;
     }
 
-    public void setEnderecos(List<Endereco> enderecos) {
+    public void setEnderecos(Set<Endereco> enderecos) {
         this.enderecos = enderecos;
     }
 

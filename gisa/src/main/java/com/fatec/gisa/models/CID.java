@@ -3,7 +3,7 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "CID")
+@Table(name = "tab_CID")
 public class CID {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cid_seq")
@@ -11,7 +11,7 @@ public class CID {
     @Column(name = "CODIGO_CID")
     private Integer codigoCID;
 
-    @Column(name = "DESCRICAO", nullable = false, length = 255)
+    @Column(name = "DESCRICAO")
     private String descricao;
 
     // Getters and Setters

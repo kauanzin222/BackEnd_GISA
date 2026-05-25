@@ -3,15 +3,15 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "CBO")
+@Table(name = "tab_CBO")
 public class CBO {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cbo_seq")
     @SequenceGenerator(name = "cbo_seq", sequenceName = "SEQ_CBO", allocationSize = 1)
-    @Column(name = "CODIGO_CBO")
+    @Column(name = "CODIGOCBO")
     private Integer codigoCBO;
 
-    @Column(name = "TITULO_CBO", nullable = false, length = 255)
+    @Column(name = "TITULOCBO")
     private String tituloCBO;
 
     // Getters and Setters

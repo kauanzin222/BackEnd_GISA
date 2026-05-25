@@ -4,22 +4,22 @@ import com.fatec.gisa.enums.TipoEscola;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ESCOLA")
+@Table(name = "tab_ESCOLA")
 public class Escola {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "escola_seq")
     @SequenceGenerator(name = "escola_seq", sequenceName = "SEQ_ESCOLA", allocationSize = 1)
-    @Column(name = "ID_ESCOLA")
+    @Column(name = "IDESCOLA")
     private Integer idEscola;
 
-    @Column(name = "NOME", nullable = false, length = 100)
+    @Column(name = "NOME")
     private String nome;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "TIPO_ESCOLA", length = 20)
+    @Column(name = "TIPOESCOLA")
     private TipoEscola tipoEscola;
 
-    @Column(name = "TELEFONE", length = 20)
+    @Column(name = "TELEFONE")
     private String telefone;
 
     // Getters and Setters

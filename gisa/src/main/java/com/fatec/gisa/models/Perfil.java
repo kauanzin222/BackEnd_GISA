@@ -4,22 +4,22 @@ import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "PERFIL")
+@Table(name = "tab_PERFIL")
 public class Perfil {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "perfil_seq")
     @SequenceGenerator(name = "perfil_seq", sequenceName = "SEQ_PERFIL", allocationSize = 1)
-    @Column(name = "ID_PERFIL")
+    @Column(name = "IDPERFIL")
     private Integer idPerfil;
 
-    @Column(name = "NOME", nullable = false, unique = true, length = 100)
+    @Column(name = "NOME")
     private String nome;
 
     @ManyToMany
     @JoinTable(
         name = "PERFIL_PERMISSAO",
-        joinColumns = @JoinColumn(name = "ID_PERFIL", referencedColumnName = "ID_PERFIL"),
-        inverseJoinColumns = @JoinColumn(name = "ID_PERMISSAO", referencedColumnName = "ID_PERMISSAO")
+        joinColumns = @JoinColumn(name = "IDPERFIL"),
+        inverseJoinColumns = @JoinColumn(name = "IDPERMISSAO")
     )
     private List<Permissao> permissoes;
 
