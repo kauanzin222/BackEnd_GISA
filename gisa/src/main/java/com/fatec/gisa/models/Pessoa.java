@@ -8,13 +8,13 @@ import com.fatec.gisa.enums.StatusCadastro;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tab_PESSOA")
+@Table(name = "TAB_PESSOA")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pessoa_seq")
     @SequenceGenerator(name = "pessoa_seq", sequenceName = "SEQ_PESSOA", allocationSize = 1)
-    @Column(name = "ID_CADASTRO")
+    @Column(name = "IDCADASTRO")
     protected Integer idCadastro;
 
     @Column(name = "CPF")

@@ -3,7 +3,7 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "PRONTUARIO")
+@Table(name = "TAB_PRONTUARIO")
 public class Prontuario {
     @Id
     private Integer id;
@@ -23,12 +23,12 @@ public class Prontuario {
     private String mobilidade;
 
     // Getters and Setters
-    public Integer getIdProntuario() {
-        return idProntuario;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdProntuario(Integer idProntuario) {
-        this.idProntuario = idProntuario;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getAlergias() {

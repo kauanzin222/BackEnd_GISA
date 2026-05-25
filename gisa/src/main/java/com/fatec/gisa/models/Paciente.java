@@ -26,21 +26,21 @@ public class Paciente extends Pessoa {
     private Escola escola;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "STATUS_PACIENTE", length = 20)
+    @Column(name = "STATUSPACIENTE")
     private StatusPaciente statusPaciente;
 
-    @Column(name = "DATA_CADASTRO")
+    @Column(name = "DATACADASTRO")
     private LocalDate dataCadastro;
 
     @Column(name = "CONVENIO")
     private boolean convenio;
 
     @ManyToOne
-    @JoinColumn(name = "CID_PRINCIPAL", referencedColumnName = "CODIGO_CID")
+    @JoinColumn(name = "CIDPRINCIPAL")
     private CID cidPrincipal;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "TIPO_ENTRADA", length = 20)
+    @Column(name = "TIPOENTRADA")
     private TipoEntrada tipoEntrada;
 
     // Getters and Setters

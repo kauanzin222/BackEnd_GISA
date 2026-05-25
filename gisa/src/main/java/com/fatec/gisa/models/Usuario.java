@@ -1,34 +1,38 @@
 package com.fatec.gisa.models;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "USUARIO")
+@Table(name = "TAB_USUARIO")
 public class Usuario {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuario_seq")
-    @SequenceGenerator(name = "usuario_seq", sequenceName = "SEQ_USUARIO", allocationSize = 1)
-    @Column(name = "ID_USUARIO")
-    private Integer idUsuario;
+    private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "ID_CADASTRO", referencedColumnName = "ID_CADASTRO", unique = true)
+    @MapsId
+    @JoinColumn(name = "IDCADASTRO")
     private Pessoa pessoa;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_PERFIL", referencedColumnName = "ID_PERFIL")
-    private Perfil perfil;
+    @ManyToMany
+    @JoinTable(
+        name = "USUARIO_PERFIL",
+        joinColumns = @JoinColumn(name = "IDCADASTRO"),
+        inverseJoinColumns = @JoinColumn(name = "IDPERFIL")
+    )
+    private Set<Perfil> perfis;
 
     @Column(name = "SENHA", nullable = false, length = 255)
     private String senha;
 
     // Getters and Setters
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setId(Integer id) {
+        this.id= id;
     }
 
     public Pessoa getPessoa() {
@@ -39,14 +43,6 @@ public class Usuario {
         this.pessoa = pessoa;
     }
 
-    public Perfil getPerfil() {
-        return perfil;
-    }
-
-    public void setPerfil(Perfil perfil) {
-        this.perfil = perfil;
-    }
-
     public String getSenha() {
         return senha;
     }
@@ -54,4 +50,14 @@ public class Usuario {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
+    public Set<Perfil> getPerfis() {
+        return perfis;
+    }
+
+    public void setPerfis(Set<Perfil> perfis) {
+        this.perfis = perfis;
+    }
+
+    
 }

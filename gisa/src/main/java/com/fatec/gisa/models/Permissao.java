@@ -3,7 +3,7 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tab_PERMISSAO")
+@Table(name = "TAB_PERMISSAO")
 public class Permissao {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "permissao_seq")

@@ -3,7 +3,7 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tTAB_CARGO")
+@Table(name = "TAB_CARGO")
 public class Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cargo_seq")

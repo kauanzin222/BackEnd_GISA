@@ -11,7 +11,7 @@ public class Especialista extends Profissional {
 
     @ManyToMany
     @JoinTable(
-        name = "ESPECIALISTA_ESPECIALIDADE",
+        name = "ESPECIALISTA_PROFISSIONAL",
         joinColumns = @JoinColumn(name = "IDESPECIALISTA"),
         inverseJoinColumns = @JoinColumn(name = "IDESPECIALIDADE")
     )

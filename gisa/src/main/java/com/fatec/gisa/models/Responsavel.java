@@ -3,9 +3,9 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "RESPONSAVEL")
+@Table(name = "TAB_RESPONSAVEL")
 public class Responsavel extends Pessoa {
-    @Column(name = "OCUPACAO", length = 100)
+    @Column(name = "OCUPACAO")
     private String ocupacao;
 
     // Getters and Setters

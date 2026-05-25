@@ -8,7 +8,7 @@ import com.fatec.gisa.enums.StatusTerapia;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tab_TERAPIA")
+@Table(name = "TAB_TERAPIA")
 public class Terapia {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "terapia_seq")
@@ -19,11 +19,11 @@ public class Terapia {
     @Column(name = "DATA")
     private LocalDate data;
 
-    @Column(name = "DESCRICAO", length = 500)
+    @Column(name = "DESCRICAO")
     private String descricao;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "STATUSTERAPIA", length = 20)
+    @Column(name = "STATUSTERAPIA")
     private StatusTerapia statusTerapia;
 
     @Enumerated(EnumType.STRING)
@@ -40,9 +40,9 @@ public class Terapia {
 
     @ManyToMany
     @JoinTable(
-        name = "TERAPIA_ESPECIALISTA",
-        joinColumns = @JoinColumn(name = "ID_TERAPIA", referencedColumnName = "ID_TERAPIA"),
-        inverseJoinColumns = @JoinColumn(name = "ID_CADASTRO", referencedColumnName = "ID_CADASTRO")
+        name = "ESPECIALISTA_TERAPIA",
+        joinColumns = @JoinColumn(name = "IDTERAPIA"),
+        inverseJoinColumns = @JoinColumn(name = "IDESPECIALISTA")
     )
     private List<Especialista> especialistas;
 

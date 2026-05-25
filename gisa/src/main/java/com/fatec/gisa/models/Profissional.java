@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "PROFISSIONAL")
 public class Profissional extends Pessoa {
     @ManyToOne
-    @JoinColumn(name = "ID_CARGO", referencedColumnName = "ID_CARGO")
+    @JoinColumn(name = "IDCARGO")
     private Cargo cargo;
 
     // Getters and Setters

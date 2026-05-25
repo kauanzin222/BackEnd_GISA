@@ -4,7 +4,7 @@ import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tab_PERFIL")
+@Table(name = "TAB_PERFIL")
 public class Perfil {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "perfil_seq")
