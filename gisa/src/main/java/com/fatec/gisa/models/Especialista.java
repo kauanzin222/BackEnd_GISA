@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "TAB_ESPECIALISTA")
+@PrimaryKeyJoinColumn(name = "IDESPECIALISTA")
 public class Especialista extends Profissional {
     @Column(name = "REGISTROCONSELHO")
     private String registroConselho;

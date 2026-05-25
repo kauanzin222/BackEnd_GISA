@@ -36,8 +36,8 @@ public class UsuarioService {
             if (usuarioAtualizado.getSenha() != null) {
                 usuario.setSenha(usuarioAtualizado.getSenha());
             }
-            if (usuarioAtualizado.getPerfil() != null) {
-                usuario.setPerfil(usuarioAtualizado.getPerfil());
+            if (usuarioAtualizado.getPerfis() != null) {
+                usuario.setPerfis(usuarioAtualizado.getPerfis());
             }
             return usuarioRepository.save(usuario);
         }

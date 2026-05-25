@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "TAB_PACIENTE")
+@PrimaryKeyJoinColumn(name = "IDPACIENTE")
 public class Paciente extends Pessoa {
     @ManyToMany
     @JoinTable(

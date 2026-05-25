@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "TAB_RESPONSAVEL")
+@PrimaryKeyJoinColumn(name = "IDRESPONSAVEL")
 public class Responsavel extends Pessoa {
     @Column(name = "OCUPACAO")
     private String ocupacao;

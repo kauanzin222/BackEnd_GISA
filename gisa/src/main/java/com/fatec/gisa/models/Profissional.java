@@ -3,7 +3,8 @@ package com.fatec.gisa.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "PROFISSIONAL")
+@Table(name = "TAB_PROFISSIONAL")
+@PrimaryKeyJoinColumn(name = "IDPROFISSIONAL")
 public class Profissional extends Pessoa {
     @ManyToOne
     @JoinColumn(name = "IDCARGO")
