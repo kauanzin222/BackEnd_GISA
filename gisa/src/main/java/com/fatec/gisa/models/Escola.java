@@ -15,7 +15,7 @@ public class Escola {
     @Column(name = "NOME")
     private String nome;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "TIPOESCOLA")
     private TipoEscola tipoEscola;
 

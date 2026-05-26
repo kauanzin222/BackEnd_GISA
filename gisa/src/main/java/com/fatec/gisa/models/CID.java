@@ -6,20 +6,18 @@ import jakarta.persistence.*;
 @Table(name = "TAB_CID")
 public class CID {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cid_seq")
-    @SequenceGenerator(name = "cid_seq", sequenceName = "SEQ_CID", allocationSize = 1)
     @Column(name = "CODIGOCID")
-    private Integer codigoCID;
+    private String codigoCID;
 
     @Column(name = "DESCRICAO")
     private String descricao;
 
     // Getters and Setters
-    public Integer getCodigoCID() {
+    public String getCodigoCID() {
         return codigoCID;
     }
 
-    public void setCodigoCID(Integer codigoCID) {
+    public void setCodigoCID(String codigoCID) {
         this.codigoCID = codigoCID;
     }
 

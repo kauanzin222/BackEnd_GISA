@@ -29,7 +29,7 @@ public class Pessoa {
     @Column(name = "SEXO")
     private char sexo;
 
-    @OneToMany(mappedBy = "moradores")
+    @ManyToMany(mappedBy = "moradores")
     private Set<Endereco> enderecos;
 
     @Column(name = "CELULAR")

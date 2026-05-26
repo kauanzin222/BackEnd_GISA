@@ -157,6 +157,7 @@ Terapia (M-M) → Especialista
 | PACIENTE | Pacientes do sistema |
 | PROFISSIONAL | Profissionais |
 | ESPECIALISTA | Especialistas |
+| ESPECIALISTAPJ | Especialistas PJ|
 | USUARIO | Usuários do sistema |
 | TERAPIA | Sessões terapêuticas |
 | PRONTUARIO | Registros médicos |

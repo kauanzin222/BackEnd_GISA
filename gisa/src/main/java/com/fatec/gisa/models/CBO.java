@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 @Table(name = "TAB_CBO")
 public class CBO {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cbo_seq")
-    @SequenceGenerator(name = "cbo_seq", sequenceName = "SEQ_CBO", allocationSize = 1)
     @Column(name = "CODIGOCBO")
     private Integer codigoCBO;
 
