@@ -42,6 +42,9 @@ public class Pessoa {
     @Column(name = "NUMCNS")
     private String numCNS;
 
+    @Column(name = "EMAIL")
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUSCADASTRO")
     private StatusCadastro statusCadastro;
@@ -125,5 +128,13 @@ public class Pessoa {
 
     public void setStatusCadastro(StatusCadastro statusCadastro) {
         this.statusCadastro = statusCadastro;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

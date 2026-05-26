@@ -42,14 +42,12 @@ public class ProfissionalMapper {
             ? profissional.getStatusCadastro().toString()
             : "Desconhecido";
 
-        String email = extrairEmailDePessoa(profissional);
-
         return new ProfissionalSummaryDTO(
             profissional.getIdCadastro(),
             profissional.getNome(),
             nomeEspecialidades,
             registro,
-            email,
+            profissional.getEmail(),
             status
         );
     }
@@ -66,8 +64,6 @@ public class ProfissionalMapper {
         List<EnderecoDTO> enderecosDTO = profissional.getEnderecos() != null
             ? profissional.getEnderecos().stream().map(this::toEnderecoDTO).collect(Collectors.toList())
             : List.of();
-
-        String email = extrairEmailDePessoa(profissional);
 
         Boolean isPJ = profissional instanceof EspecialistaPJ;
         String cnpj = null;
@@ -100,7 +96,7 @@ public class ProfissionalMapper {
             profissional.getEstadoCivil() != null ? profissional.getEstadoCivil().toString() : null,
             profissional.getStatusCadastro() != null ? profissional.getStatusCadastro().toString() : null,
             enderecosDTO,
-            email,
+            profissional.getEmail(),
             registro,
             null,  
             null,  
@@ -121,9 +117,5 @@ public class ProfissionalMapper {
     private EnderecoDTO toEnderecoDTO(Endereco endereco) {
         if (endereco == null) return null;
         return new EnderecoDTO(endereco.getIdEndereco(), endereco.getRua(), endereco.getNumero(), endereco.getComplemento(), endereco.getBairro(), endereco.getCidade(), endereco.getEstado(), endereco.getCep());
-    }
-
-    private String extrairEmailDePessoa(Pessoa pessoa) {
-        return null;
     }
 }

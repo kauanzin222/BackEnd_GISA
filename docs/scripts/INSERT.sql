@@ -21,6 +21,7 @@ INSERT INTO tab_pessoa (idcadastro, cpf, nome, datanascimento, sexo, celular, es
 INSERT INTO tab_pessoa (idcadastro, cpf, nome, datanascimento, sexo, celular, estadocivil, numcns, email, statuscadastro) VALUES (9, '99900011122', 'Sofia Rodrigues Lima', TO_DATE('2016-06-14', 'YYYY-MM-DD'), 'F', '15999990000', 'SOLTEIRO', '901234567890123', NULL, 'ATIVO');
 INSERT INTO tab_pessoa (idcadastro, cpf, nome, datanascimento, sexo, celular, estadocivil, numcns, email, statuscadastro) VALUES (10, '12345678901', 'Enzo Gabriel Santos', TO_DATE('2020-11-23', 'YYYY-MM-DD'), 'M', '15991110000', 'SOLTEIRO', '123012345678901', NULL, 'ATIVO');
 
+SELECT * FROM TAB_PESSOA;
 --- TAB_PERFIL
 INSERT INTO tab_perfil (idperfil, nome) VALUES (1, 'Administrador');
 INSERT INTO tab_perfil (idperfil, nome) VALUES (2, 'Secretaria');
