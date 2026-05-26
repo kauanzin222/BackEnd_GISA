@@ -23,6 +23,7 @@ CREATE TABLE tab_pessoa (
    celular varchar2(15) NOT NULL,
    estadocivil varchar2(20) NOT NULL,
    numcns varchar2(15) NOT NULL,
+   email varchar2(100),
    statuscadastro varchar2(20) NOT NULL
 );
 
