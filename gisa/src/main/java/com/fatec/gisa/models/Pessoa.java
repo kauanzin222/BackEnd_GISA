@@ -12,10 +12,10 @@ import jakarta.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Pessoa {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pessoa_seq")
-    @SequenceGenerator(name = "pessoa_seq", sequenceName = "SEQ_PESSOA", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_pessoa")
+    @SequenceGenerator(name = "seq_pessoa", sequenceName = "seq_pessoa", allocationSize = 1)
     @Column(name = "IDCADASTRO")
-    protected Integer idCadastro;
+    private Integer idCadastro;
 
     @Column(name = "CPF")
     private String cpf;

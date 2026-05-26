@@ -36,7 +36,7 @@ public class ProfissionalService {
     @Autowired
     private ProfissionalDTOMapper dtoMapper;
 
-   // ── GET: LISTAGEM PAGINADA ──
+    // ── GET: LISTAGEM PAGINADA ──
     public Page<ProfissionalSummaryDTO> listarTodos(Pageable pageable) {
         return profissionalRepository.findAll(pageable)
                 .map(profissionalMapper::toSummaryDTO); // Totalmente seguro e limpo!
@@ -49,7 +49,7 @@ public class ProfissionalService {
                 .orElse(null);
     }
 
-   // ── GET: FILTRO POR NOME ──
+    // ── GET: FILTRO POR NOME ──
     public List<ProfissionalSummaryDTO> buscarPorNome(String nome) {
         return profissionalRepository.findByNomeContainingIgnoreCase(nome)
                 .stream()
@@ -61,13 +61,13 @@ public class ProfissionalService {
         return profissionalRepository.findByCpf(cpf);
     }
 
-    // ── POST: CRIAÇÃO COM DTO E USUÁRIO (CORRIGIDO) ──
+    @Transactional // CORREÇÃO CRÍTICA: Mantém a sessão do Hibernate ativa para o @MapsId funcionar
     public ProfissionalDetailDTO criar(ProfissionalCadastroDTO cadastroDTO) {
         if (cadastroDTO == null || cadastroDTO.nome() == null || cadastroDTO.nome().isBlank()) {
             throw new IllegalArgumentException("Nome do profissional é obrigatório");
         }
 
-        // Validação preventiva de CPF duplicado
+        // Validação de CPF duplicado
         String cpfLimpo = cadastroDTO.cpf().replaceAll("[^\\d]", "");
         boolean cpfExiste = profissionalRepository.findAll().stream()
                 .anyMatch(p -> p.getCpf().equals(cpfLimpo));
@@ -75,17 +75,24 @@ public class ProfissionalService {
             throw new IllegalArgumentException("Profissional com este CPF já existe");
         }
 
-        // Converte DTO para Entidade Especialista e salva no Oracle
+        // 1. Converte o DTO para a Entidade Especialista
         Especialista novaEspecialista = dtoMapper.toEntity(cadastroDTO);
-        Especialista especialistaSalva = profissionalRepository.save(novaEspecialista);
 
-        // Cria a conta de acesso ao sistema automaticamente vinculada
+        // 2. Salva o especialista e garante que o ID do join inheritance esteja disponível
+        Especialista especialistaSalva = profissionalRepository.saveAndFlush(novaEspecialista);
+        if (especialistaSalva.getIdCadastro() == null) {
+            throw new IllegalStateException("Não foi possível gerar o ID do profissional antes de criar o usuário");
+        }
+
+        // 3. Cria a conta de Usuário injetando a entidade recém-salva e gerenciada
         Usuario usuario = new Usuario();
-        usuario.setId(especialistaSalva.getIdCadastro());
         usuario.setPessoa(especialistaSalva);
-        usuario.setSenha(cadastroDTO.senhaProvisoria()); // Em produção, aplicar criptografia aqui
+        usuario.setSenha(cadastroDTO.senhaProvisoria());
+
+        // 4. Salva o Usuário sob o mesmo contexto transacional
         usuarioRepository.save(usuario);
 
+        // 5. Retorna o DTO de detalhe
         return profissionalMapper.toDetailDTO(especialistaSalva);
     }
 

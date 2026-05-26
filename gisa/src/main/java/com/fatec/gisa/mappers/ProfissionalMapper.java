@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.fatec.gisa.models.Endereco;
-import com.fatec.gisa.models.Pessoa;
 import com.fatec.gisa.models.Especialista;
 import com.fatec.gisa.models.EspecialistaPJ;
 import com.fatec.gisa.models.Profissional;

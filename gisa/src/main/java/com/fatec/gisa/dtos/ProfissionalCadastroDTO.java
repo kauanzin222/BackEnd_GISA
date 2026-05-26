@@ -18,7 +18,6 @@ public record ProfissionalCadastroDTO(
     String nome,
     String cpf,
     LocalDate dataNascimento,
-    String rg,
     
     // ── DADOS DE ACESSO ──
     String senhaProvisoria,  // Será armazenada em Usuario
@@ -31,7 +30,7 @@ public record ProfissionalCadastroDTO(
     
     // ── CONTATO ──
     String email,
-    String telefone,
+    String celular,
     EnderecoDTO endereco,               // Endereço completo
     
     // ── PESSOA JURÍDICA (opcional/condicional) ──

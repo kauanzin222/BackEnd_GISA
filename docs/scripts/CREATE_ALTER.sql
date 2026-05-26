@@ -13,6 +13,21 @@ CREATE TABLE tab_endereco (
    complemento varchar2(75)
 );
 
+SELECT 
+    c.constraint_name, 
+    CASE c.constraint_type
+        WHEN 'P' THEN 'Chave Primária (Duplicada ou Nula)'
+        WHEN 'C' THEN 'Validação / Campo NOT NULL (Faltando dados)'
+        WHEN 'U' THEN 'Chave Única / UNIQUE (Dado duplicado)'
+        WHEN 'R' THEN 'Chave Estrangeira / Foreign Key'
+    END AS tipo_restricao,
+    cc.column_name AS coluna_afetada, 
+    c.search_condition AS condicao_check
+FROM user_constraints c
+JOIN user_cons_columns cc ON c.constraint_name = cc.constraint_name
+WHERE c.constraint_name = 'SYS_C009440';
+
+
 --- TAB_PESSOA
 CREATE TABLE tab_pessoa (
    idcadastro number(10) PRIMARY KEY,
@@ -244,3 +259,12 @@ CREATE SEQUENCE seq_especialidade START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_perfil START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_permissao START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_endereco START WITH 1 INCREMENT BY 1;
+
+-- Remove a sequence atual
+DROP SEQUENCE seq_pessoa;
+
+-- Cria a sequence começando em 100, subindo de 1 em 1
+CREATE SEQUENCE seq_pessoa START WITH 100 INCREMENT BY 1;
+
+-- Confirma a operação
+COMMIT;
