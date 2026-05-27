@@ -78,7 +78,8 @@ public class ProfissionalService {
         // 1. Converte o DTO para a Entidade Especialista
         Especialista novaEspecialista = dtoMapper.toEntity(cadastroDTO);
 
-        // 2. Salva o especialista e garante que o ID do join inheritance esteja disponível
+        // 2. Salva o especialista e garante que o ID do join inheritance esteja
+        // disponível
         Especialista especialistaSalva = profissionalRepository.saveAndFlush(novaEspecialista);
         if (especialistaSalva.getIdCadastro() == null) {
             throw new IllegalStateException("Não foi possível gerar o ID do profissional antes de criar o usuário");
@@ -86,7 +87,7 @@ public class ProfissionalService {
 
         // 3. Cria a conta de Usuário injetando a entidade recém-salva e gerenciada
         Usuario usuario = new Usuario();
-        usuario.setPessoa(especialistaSalva);
+        usuario.setPessoa(especialistaSalva); // O @MapsId cuidará de vincular os IDs automaticamente no insert
         usuario.setSenha(cadastroDTO.senhaProvisoria());
 
         // 4. Salva o Usuário sob o mesmo contexto transacional

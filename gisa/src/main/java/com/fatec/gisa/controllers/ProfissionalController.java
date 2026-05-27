@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/profissionais")
 public class ProfissionalController {
@@ -55,7 +56,8 @@ public class ProfissionalController {
 
     // ── PUT: ATUALIZAÇÃO VIA DTO DO FORMULÁRIO (ATUALIZADO) ──
     @PutMapping("/{id}")
-    public ResponseEntity<ProfissionalDetailDTO> atualizar(@PathVariable Integer id, @RequestBody ProfissionalCadastroDTO cadastroDTO) {
+    public ResponseEntity<ProfissionalDetailDTO> atualizar(@PathVariable Integer id,
+            @RequestBody ProfissionalCadastroDTO cadastroDTO) {
         ProfissionalDetailDTO profissional = profissionalService.atualizar(id, cadastroDTO);
         if (profissional != null) {
             return ResponseEntity.ok(profissional);
