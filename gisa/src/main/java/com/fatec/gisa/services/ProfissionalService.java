@@ -40,7 +40,7 @@ public class ProfissionalService {
     // ── GET: LISTAGEM PAGINADA (ATUALIZADO: APENAS PROFISSIONAIS ATIVOS) ──
     public Page<ProfissionalSummaryDTO> listarTodos(Pageable pageable) {
         // Filtra a paginação trazendo apenas quem possui o status ativo no sistema
-        return profesionalRepository.findByStatus("ATIVO", pageable)
+        return profesionalRepository.findByStatusCadastro(StatusCadastro.ATIVO, pageable)
                 .map(profissionalMapper::toSummaryDTO);
     }
 
