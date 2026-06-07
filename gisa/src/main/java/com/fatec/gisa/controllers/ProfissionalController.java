@@ -47,14 +47,14 @@ public class ProfissionalController {
         return ResponseEntity.ok(profissionais);
     }
 
-    // ── POST: CRIAÇÃO VIA DTO DO FORMULÁRIO (ATUALIZADO) ──
+    // ── POST: CRIAÇÃO VIA DTO DO FORMULÁRIO ──
     @PostMapping
     public ResponseEntity<ProfissionalDetailDTO> criar(@RequestBody ProfissionalCadastroDTO cadastroDTO) {
         ProfissionalDetailDTO novoProfissional = profissionalService.criar(cadastroDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoProfissional);
     }
 
-    // ── PUT: ATUALIZAÇÃO VIA DTO DO FORMULÁRIO (ATUALIZADO) ──
+    // ── PUT: ATUALIZAÇÃO VIA DTO DO FORMULÁRIO ──
     @PutMapping("/{id}")
     public ResponseEntity<ProfissionalDetailDTO> atualizar(@PathVariable Integer id,
             @RequestBody ProfissionalCadastroDTO cadastroDTO) {
@@ -75,7 +75,7 @@ public class ProfissionalController {
         return ResponseEntity.notFound().build();
     }
 
-    // ── DELETE: DELEÇÃO COMPLETA ──
+    // ── DELETE: DISPARA A INATIVAÇÃO LÓGICA NO SERVICE ──
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         profissionalService.deletar(id);

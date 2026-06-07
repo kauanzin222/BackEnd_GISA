@@ -3,6 +3,7 @@ package com.fatec.gisa.services;
 import com.fatec.gisa.dtos.ProfissionalCadastroDTO;
 import com.fatec.gisa.dtos.ProfissionalDetailDTO;
 import com.fatec.gisa.dtos.ProfissionalSummaryDTO;
+import com.fatec.gisa.enums.StatusCadastro;
 import com.fatec.gisa.mappers.ProfissionalDTOMapper;
 import com.fatec.gisa.mappers.ProfissionalMapper;
 import com.fatec.gisa.models.Especialista;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public class ProfissionalService {
 
     @Autowired
-    private ProfissionalRepository profissionalRepository;
+    private ProfissionalRepository profesionalRepository;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -36,32 +37,33 @@ public class ProfissionalService {
     @Autowired
     private ProfissionalDTOMapper dtoMapper;
 
-    // ── GET: LISTAGEM PAGINADA ──
+    // ── GET: LISTAGEM PAGINADA (ATUALIZADO: APENAS PROFISSIONAIS ATIVOS) ──
     public Page<ProfissionalSummaryDTO> listarTodos(Pageable pageable) {
-        return profissionalRepository.findAll(pageable)
-                .map(profissionalMapper::toSummaryDTO); // Totalmente seguro e limpo!
+        // Filtra a paginação trazendo apenas quem possui o status ativo no sistema
+        return profesionalRepository.findByStatus("ATIVO", pageable)
+                .map(profissionalMapper::toSummaryDTO);
     }
 
     // ── GET: BUSCA POR ID ──
     public ProfissionalDetailDTO buscarPorId(Integer id) {
-        return profissionalRepository.findById(id)
-                .map(profissionalMapper::toDetailDTO) // Totalmente seguro e limpo!
+        return profesionalRepository.findById(id)
+                .map(profissionalMapper::toDetailDTO)
                 .orElse(null);
     }
 
     // ── GET: FILTRO POR NOME ──
     public List<ProfissionalSummaryDTO> buscarPorNome(String nome) {
-        return profissionalRepository.findByNomeContainingIgnoreCase(nome)
+        return profesionalRepository.findByNomeContainingIgnoreCase(nome)
                 .stream()
-                .map(profissionalMapper::toSummaryDTO) // Totalmente seguro e limpo!
+                .map(profissionalMapper::toSummaryDTO)
                 .collect(Collectors.toList());
     }
 
     public Profissional buscarPorCpf(String cpf) {
-        return profissionalRepository.findByCpf(cpf);
+        return profesionalRepository.findByCpf(cpf);
     }
 
-    @Transactional // CORREÇÃO CRÍTICA: Mantém a sessão do Hibernate ativa para o @MapsId funcionar
+    @Transactional // Mantém a sessão do Hibernate ativa para o @MapsId funcionar
     public ProfissionalDetailDTO criar(ProfissionalCadastroDTO cadastroDTO) {
         if (cadastroDTO == null || cadastroDTO.nome() == null || cadastroDTO.nome().isBlank()) {
             throw new IllegalArgumentException("Nome do profissional é obrigatório");
@@ -69,7 +71,7 @@ public class ProfissionalService {
 
         // Validação de CPF duplicado
         String cpfLimpo = cadastroDTO.cpf().replaceAll("[^\\d]", "");
-        boolean cpfExiste = profissionalRepository.findAll().stream()
+        boolean cpfExiste = profesionalRepository.findAll().stream()
                 .anyMatch(p -> p.getCpf().equals(cpfLimpo));
         if (cpfExiste) {
             throw new IllegalArgumentException("Profissional com este CPF já existe");
@@ -78,16 +80,18 @@ public class ProfissionalService {
         // 1. Converte o DTO para a Entidade Especialista
         Especialista novaEspecialista = dtoMapper.toEntity(cadastroDTO);
 
-        // 2. Salva o especialista e garante que o ID do join inheritance esteja
-        // disponível
-        Especialista especialistaSalva = profissionalRepository.saveAndFlush(novaEspecialista);
+        // Força o status inicial como ATIVO na criação do registro
+        novaEspecialista.setStatusCadastro(StatusCadastro.ATIVO);
+
+        // 2. Salva o especialista e garante o ID gerenciado
+        Especialista especialistaSalva = profesionalRepository.saveAndFlush(novaEspecialista);
         if (especialistaSalva.getIdCadastro() == null) {
             throw new IllegalStateException("Não foi possível gerar o ID do profissional antes de criar o usuário");
         }
 
-        // 3. Cria a conta de Usuário injetando a entidade recém-salva e gerenciada
+        // 3. Cria a conta de Usuário injetando a entidade recém-salva
         Usuario usuario = new Usuario();
-        usuario.setPessoa(especialistaSalva); // O @MapsId cuidará de vincular os IDs automaticamente no insert
+        usuario.setPessoa(especialistaSalva);
         usuario.setSenha(cadastroDTO.senhaProvisoria());
 
         // 4. Salva o Usuário sob o mesmo contexto transacional
@@ -97,9 +101,9 @@ public class ProfissionalService {
         return profissionalMapper.toDetailDTO(especialistaSalva);
     }
 
-    // ── PUT: ATUALIZAÇÃO COM DTO (CORRIGIDO) ──
+    // ── PUT: ATUALIZAÇÃO COM DTO ──
     public ProfissionalDetailDTO atualizar(Integer id, ProfissionalCadastroDTO cadastroDTO) {
-        Especialista especialistaExistente = (Especialista) profissionalRepository.findById(id)
+        Especialista especialistaExistente = (Especialista) profesionalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Profissional com ID " + id + " não encontrado"));
 
         if (cadastroDTO.nome() == null || cadastroDTO.nome().isBlank()) {
@@ -108,7 +112,7 @@ public class ProfissionalService {
 
         // Atualiza os dados mesclando a entidade com o DTO
         Especialista especialistaAtualizada = dtoMapper.updateEntity(cadastroDTO, especialistaExistente);
-        Especialista salva = profissionalRepository.save(especialistaAtualizada);
+        Especialista salva = profesionalRepository.save(especialistaAtualizada);
 
         // Atualiza a senha do usuário se uma nova tiver sido digitada no formulário
         if (cadastroDTO.senhaProvisoria() != null && !cadastroDTO.senhaProvisoria().isBlank()) {
@@ -122,10 +126,16 @@ public class ProfissionalService {
         return profissionalMapper.toDetailDTO(salva);
     }
 
-    // ── DELETE: DELEÇÃO LIMPA (CORRIGIDO) ──
+    // ── DELETE: INATIVAÇÃO LÓGICA / SOFT DELETE (ATUALIZADO) ──
     public void deletar(Integer id) {
-        // Remove primeiro o Usuário para manter a integridade referencial do Oracle
-        usuarioRepository.deleteById(id);
-        profissionalRepository.deleteById(id);
+        // Recupera o profissional do banco de dados
+        Profissional profissional = profesionalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Profissional com ID " + id + " não encontrado"));
+        
+        // Altera a propriedade para INATIVO, salvando o histórico e mantendo a integridade do banco
+        profissional.setStatusCadastro(StatusCadastro.INATIVO);
+        
+        // Atualiza o registro existente no Oracle/H2 através do save
+        profesionalRepository.save(profissional);
     }
 }
