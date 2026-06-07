@@ -37,9 +37,8 @@ public class ProfissionalService {
     @Autowired
     private ProfissionalDTOMapper dtoMapper;
 
-    // ── GET: LISTAGEM PAGINADA (ATUALIZADO: APENAS PROFISSIONAIS ATIVOS) ──
+    // ── GET: LISTAGEM PAGINADA (APENAS PROFISSIONAIS ATIVOS) ──
     public Page<ProfissionalSummaryDTO> listarTodos(Pageable pageable) {
-        // Filtra a paginação trazendo apenas quem possui o status ativo no sistema
         return profesionalRepository.findByStatusCadastro(StatusCadastro.ATIVO, pageable)
                 .map(profissionalMapper::toSummaryDTO);
     }
@@ -69,7 +68,6 @@ public class ProfissionalService {
             throw new IllegalArgumentException("Nome do profissional é obrigatório");
         }
 
-        // Validação de CPF duplicado
         String cpfLimpo = cadastroDTO.cpf().replaceAll("[^\\d]", "");
         boolean cpfExiste = profesionalRepository.findAll().stream()
                 .anyMatch(p -> p.getCpf().equals(cpfLimpo));
@@ -77,44 +75,66 @@ public class ProfissionalService {
             throw new IllegalArgumentException("Profissional com este CPF já existe");
         }
 
-        // 1. Converte o DTO para a Entidade Especialista
         Especialista novaEspecialista = dtoMapper.toEntity(cadastroDTO);
-
-        // Força o status inicial como ATIVO na criação do registro
         novaEspecialista.setStatusCadastro(StatusCadastro.ATIVO);
 
-        // 2. Salva o especialista e garante o ID gerenciado
         Especialista especialistaSalva = profesionalRepository.saveAndFlush(novaEspecialista);
         if (especialistaSalva.getIdCadastro() == null) {
             throw new IllegalStateException("Não foi possível gerar o ID do profissional antes de criar o usuário");
         }
 
-        // 3. Cria a conta de Usuário injetando a entidade recém-salva
         Usuario usuario = new Usuario();
         usuario.setPessoa(especialistaSalva);
         usuario.setSenha(cadastroDTO.senhaProvisoria());
 
-        // 4. Salva o Usuário sob o mesmo contexto transacional
         usuarioRepository.save(usuario);
 
-        // 5. Retorna o DTO de detalhe
-        return profissionalMapper.toDetailDTO(especialistaSalva);
+        return profesionalRepository.findById(especialistaSalva.getIdCadastro())
+                .map(profissionalMapper::toDetailDTO)
+                .orElse(null);
     }
 
-    // ── PUT: ATUALIZAÇÃO COM DTO ──
+    // ── PUT: ATUALIZAÇÃO POLIMÓRFICA (CORRIGIDO) ──
     public ProfissionalDetailDTO atualizar(Integer id, ProfissionalCadastroDTO cadastroDTO) {
-        Especialista especialistaExistente = (Especialista) profesionalRepository.findById(id)
+        // 1. Buscamos a entidade usando a classe base genérica para evitar ClassCastException
+        Profissional profissionalExistente = profesionalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Profissional com ID " + id + " não encontrado"));
 
         if (cadastroDTO.nome() == null || cadastroDTO.nome().isBlank()) {
             throw new IllegalArgumentException("Nome não pode estar vazio");
         }
 
-        // Atualiza os dados mesclando a entidade com o DTO
-        Especialista especialistaAtualizada = dtoMapper.updateEntity(cadastroDTO, especialistaExistente);
-        Especialista salva = profesionalRepository.save(especialistaAtualizada);
+        Profissional salva;
 
-        // Atualiza a senha do usuário se uma nova tiver sido digitada no formulário
+        // 2. Ramificação lógica baseada na instância real do objeto vindo do banco
+        if (profissionalExistente instanceof Especialista) {
+            Especialista especialistaExistente = (Especialista) profissionalExistente;
+            
+            // Se for Especialista, usamos o mapper para atualizar todos os dados (básicos + clínicos)
+            Especialista especialistaAtualizada = dtoMapper.updateEntity(cadastroDTO, especialistaExistente);
+            salva = profesionalRepository.save(especialistaAtualizada);
+        } else {
+            // Se for um Profissional comum (não-especialista), atualizamos apenas os campos gerais permitidos
+            profissionalExistente.setNome(cadastroDTO.nome());
+            
+            if (cadastroDTO.cpf() != null) {
+                profissionalExistente.setCpf(cadastroDTO.cpf().replaceAll("[^\\d]", ""));
+            }
+            if (cadastroDTO.dataNascimento() != null) {
+                profissionalExistente.setDataNascimento(cadastroDTO.dataNascimento());
+            }
+            if (cadastroDTO.email() != null) {
+                profissionalExistente.setEmail(cadastroDTO.email());
+            }
+            if (cadastroDTO.celular() != null) {
+                profissionalExistente.setCelular(cadastroDTO.celular().replaceAll("[^\\d]", ""));
+            }
+            
+            // Salva as alterações da classe base mantendo-o como Profissional genérico
+            salva = profesionalRepository.save(profissionalExistente);
+        }
+
+        // 3. Atualiza a senha do usuário se uma nova tiver sido enviada (fora do fluxo restrito)
         if (cadastroDTO.senhaProvisoria() != null && !cadastroDTO.senhaProvisoria().isBlank()) {
             Usuario usuario = usuarioRepository.findById(id).orElse(null);
             if (usuario != null) {
@@ -126,16 +146,13 @@ public class ProfissionalService {
         return profissionalMapper.toDetailDTO(salva);
     }
 
-    // ── DELETE: INATIVAÇÃO LÓGICA / SOFT DELETE (ATUALIZADO) ──
+    // ── DELETE: INATIVAÇÃO LÓGICA / SOFT DELETE ──
     public void deletar(Integer id) {
-        // Recupera o profissional do banco de dados
         Profissional profissional = profesionalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Profissional com ID " + id + " não encontrado"));
         
-        // Altera a propriedade para INATIVO, salvando o histórico e mantendo a integridade do banco
+        // Altera a propriedade usando o enum oficial do seu sistema
         profissional.setStatusCadastro(StatusCadastro.INATIVO);
-        
-        // Atualiza o registro existente no Oracle/H2 através do save
         profesionalRepository.save(profissional);
     }
 }
