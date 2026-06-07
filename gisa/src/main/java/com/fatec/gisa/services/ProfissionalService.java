@@ -6,6 +6,7 @@ import com.fatec.gisa.dtos.ProfissionalSummaryDTO;
 import com.fatec.gisa.enums.StatusCadastro;
 import com.fatec.gisa.mappers.ProfissionalDTOMapper;
 import com.fatec.gisa.mappers.ProfissionalMapper;
+import com.fatec.gisa.models.Endereco;
 import com.fatec.gisa.models.Especialista;
 import com.fatec.gisa.models.Profissional;
 import com.fatec.gisa.models.Usuario;
@@ -94,9 +95,10 @@ public class ProfissionalService {
                 .orElse(null);
     }
 
-    // ── PUT: ATUALIZAÇÃO POLIMÓRFICA (CORRIGIDO) ──
+    // ── PUT: ATUALIZAÇÃO POLIMÓRFICA COM MAPEAMENTO DE ENDEREÇO ──
     public ProfissionalDetailDTO atualizar(Integer id, ProfissionalCadastroDTO cadastroDTO) {
-        // 1. Buscamos a entidade usando a classe base genérica para evitar ClassCastException
+        // 1. Buscamos a entidade usando a classe base genérica para evitar
+        // ClassCastException
         Profissional profissionalExistente = profesionalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Profissional com ID " + id + " não encontrado"));
 
@@ -109,14 +111,16 @@ public class ProfissionalService {
         // 2. Ramificação lógica baseada na instância real do objeto vindo do banco
         if (profissionalExistente instanceof Especialista) {
             Especialista especialistaExistente = (Especialista) profissionalExistente;
-            
-            // Se for Especialista, usamos o mapper para atualizar todos os dados (básicos + clínicos)
+
+            // Se for Especialista, usamos o mapper para atualizar todos os dados (básicos +
+            // clínicos)
             Especialista especialistaAtualizada = dtoMapper.updateEntity(cadastroDTO, especialistaExistente);
             salva = profesionalRepository.save(especialistaAtualizada);
         } else {
-            // Se for um Profissional comum (não-especialista), atualizamos apenas os campos gerais permitidos
+            // Se for um Profissional comum (não-especialista), atualizamos os campos gerais
+            // permitidos
             profissionalExistente.setNome(cadastroDTO.nome());
-            
+
             if (cadastroDTO.cpf() != null) {
                 profissionalExistente.setCpf(cadastroDTO.cpf().replaceAll("[^\\d]", ""));
             }
@@ -129,12 +133,39 @@ public class ProfissionalService {
             if (cadastroDTO.celular() != null) {
                 profissionalExistente.setCelular(cadastroDTO.celular().replaceAll("[^\\d]", ""));
             }
-            
+
+            // ── NOVA LOGICA: Mapeamento Manual do Endereço do Funcionário Comum ──
+            if (cadastroDTO.endereco() != null &&
+                    profissionalExistente.getEnderecos() != null &&
+                    !profissionalExistente.getEnderecos().isEmpty()) {
+
+                // Captura o primeiro endereço associado à coleção (equivalente ao enderecos[0]
+                // do front)
+                Endereco enderecoExistente = profissionalExistente.getEnderecos().iterator().next();
+                var enderecoDto = cadastroDTO.endereco();
+
+                if (enderecoDto.rua() != null)
+                    enderecoExistente.setRua(enderecoDto.rua());
+                if (enderecoDto.numero() != null)
+                    enderecoExistente.setNumero(enderecoDto.numero());
+                if (enderecoDto.complemento() != null)
+                    enderecoExistente.setComplemento(enderecoDto.complemento());
+                if (enderecoDto.bairro() != null)
+                    enderecoExistente.setBairro(enderecoDto.bairro());
+                if (enderecoDto.cidade() != null)
+                    enderecoExistente.setCidade(enderecoDto.cidade());
+                if (enderecoDto.estado() != null)
+                    enderecoExistente.setEstado(enderecoDto.estado());
+                if (enderecoDto.cep() != null) {
+                    enderecoExistente.setCep(enderecoDto.cep().replaceAll("[^\\d]", ""));
+                }
+            }
+
             // Salva as alterações da classe base mantendo-o como Profissional genérico
             salva = profesionalRepository.save(profissionalExistente);
         }
 
-        // 3. Atualiza a senha do usuário se uma nova tiver sido enviada (fora do fluxo restrito)
+        // 3. Atualiza a senha do usuário se uma nova tiver sido enviada
         if (cadastroDTO.senhaProvisoria() != null && !cadastroDTO.senhaProvisoria().isBlank()) {
             Usuario usuario = usuarioRepository.findById(id).orElse(null);
             if (usuario != null) {
@@ -150,7 +181,7 @@ public class ProfissionalService {
     public void deletar(Integer id) {
         Profissional profissional = profesionalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Profissional com ID " + id + " não encontrado"));
-        
+
         // Altera a propriedade usando o enum oficial do seu sistema
         profissional.setStatusCadastro(StatusCadastro.INATIVO);
         profesionalRepository.save(profissional);
