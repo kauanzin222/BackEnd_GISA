@@ -18,7 +18,6 @@ public class ProfissionalDTOMapper {
             return null;
         }
 
-        // Se o CNPJ foi enviado, a instância real deve ser EspecialistaPJ
         Especialista especialista = (dto.cnpj() != null && !dto.cnpj().isBlank()) 
             ? new EspecialistaPJ() 
             : new Especialista();
@@ -30,16 +29,15 @@ public class ProfissionalDTOMapper {
         especialista.setEmail(dto.email());
         especialista.setCelular(dto.celular() != null ? dto.celular() : "(15) 99999-9999");
         
-        // CORREÇÃO: Passando as constantes dos ENUMs exigidas pelos setters
         especialista.setSexo('M'); 
         especialista.setEstadoCivil(EstadoCivil.SOLTEIRO);
         especialista.setStatusCadastro(StatusCadastro.ATIVO);
-        especialista.setNumCNS("210008000000000"); // Evita rejeição ORA-01400 no banco
+        especialista.setNumCNS("210008000000000"); 
 
-        // ── MAPEAMENTO: TAB_ESPECIALISTA ──
+        // ── MAPEAMENTO: TAB_ESPECIALISTA (CAMPOS DESCONTINUADOS REMOVIDOS) ──
         especialista.setRegistroConselho(dto.registroProfissional());
 
-        // ── MAPEAMENTO: ENDEREÇO (BLINDADO CONTRA NULLPOINTEREXCEPTION) ──
+        // ── MAPEAMENTO: ENDEREÇO ──
         if (dto.endereco() != null) {
             Endereco endereco = new Endereco();
             endereco.setRua(dto.endereco().rua());
@@ -50,14 +48,12 @@ public class ProfissionalDTOMapper {
             endereco.setEstado(dto.endereco().estado());
             endereco.setCep(dto.endereco().cep().replaceAll("[^\\d]", ""));
             
-            // CORREÇÃO CRÍTICA: Instancia o Set caso ele tenha nascido nulo
             if (especialista.getEnderecos() == null) {
                 especialista.setEnderecos(new HashSet<>());
             }
             especialista.getEnderecos().add(endereco);
         }
 
-        // ── MAPEAMENTO: TAB_ESPECIALISTAPJ (Se aplicável) ──
         if (especialista instanceof EspecialistaPJ pj) {
             pj.setCNPJ(dto.cnpj().replaceAll("[^\\d]", ""));
             pj.setRazaoSocial(dto.razaoSocial());

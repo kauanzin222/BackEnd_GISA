@@ -29,7 +29,6 @@ public class ProfissionalMapper {
         List<String> nomeEspecialidades = List.of();
         String registro = null;
 
-        // Se for uma instância de Especialista, extrai os dados clínicos com segurança
         if (profissional instanceof Especialista especialista) {
             nomeEspecialidades = especialista.getEspecialidades() != null
                 ? especialista.getEspecialidades().stream().map(Especialidade::getNome).collect(Collectors.toList())
@@ -52,7 +51,7 @@ public class ProfissionalMapper {
     }
 
     /**
-     * Converte Profissional para ProfissionalDetailDTO de forma polimórfica e segura.
+     * Converte Profissional para ProfissionalDetailDTO de forma polimórfica e ajustada.
      */
     public ProfissionalDetailDTO toDetailDTO(Profissional profissional) {
         if (profissional == null) {
@@ -71,7 +70,6 @@ public class ProfissionalMapper {
         String inscricaoEstadual = null;
         String registro = null;
 
-        // Verifica o nível da herança dinamicamente
         if (profissional instanceof Especialista especialista) {
             registro = especialista.getRegistroConselho();
             especialidadesDTO = especialista.getEspecialidades() != null
@@ -86,6 +84,7 @@ public class ProfissionalMapper {
             }
         }
 
+        // CORREÇÃO: Assinatura do construtor reduzida (removido os placeholders nulos que quebravam a compilação)
         return new ProfissionalDetailDTO(
             profissional.getIdCadastro(),
             profissional.getNome(),
@@ -97,8 +96,6 @@ public class ProfissionalMapper {
             enderecosDTO,
             profissional.getEmail(),
             registro,
-            null,  
-            null,  
             especialidadesDTO,
             cnpj,
             razaoSocial,
