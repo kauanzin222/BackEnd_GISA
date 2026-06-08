@@ -12,6 +12,7 @@ import com.fatec.gisa.models.Profissional;
 import com.fatec.gisa.models.Usuario;
 import com.fatec.gisa.repositories.ProfissionalRepository;
 import com.fatec.gisa.repositories.UsuarioRepository;
+import com.fatec.gisa.repositories.EspecialidadeRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList; // Importado para garantir a inicialização segura das coleções
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional // Garante a segurança das operações combinadas de banco
+@Transactional // Garante a segurança e atomicidade das operações combinadas de banco
 public class ProfissionalService {
 
     @Autowired
@@ -31,6 +33,9 @@ public class ProfissionalService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private EspecialidadeRepository BlackespecialidadeRepository; // Injetado para gerenciar o relacionamento ManyToMany
 
     @Autowired
     private ProfissionalMapper profissionalMapper;
@@ -63,7 +68,7 @@ public class ProfissionalService {
         return profesionalRepository.findByCpf(cpf);
     }
 
-    @Transactional // Mantém a sessão do Hibernate ativa para o @MapsId funcionar
+    @Transactional
     public ProfissionalDetailDTO criar(ProfissionalCadastroDTO cadastroDTO) {
         if (cadastroDTO == null || cadastroDTO.nome() == null || cadastroDTO.nome().isBlank()) {
             throw new IllegalArgumentException("Nome do profissional é obrigatório");
@@ -78,6 +83,20 @@ public class ProfissionalService {
 
         Especialista novaEspecialista = dtoMapper.toEntity(cadastroDTO);
         novaEspecialista.setStatusCadastro(StatusCadastro.ATIVO);
+
+        // CORREÇÃO: Inicialização de salvaguarda caso a lista nasça nula
+        if (novaEspecialista.getEspecialidades() == null) {
+            novaEspecialista.setEspecialidades(new ArrayList<>());
+        }
+
+        // Associa as especialidades enviadas no cadastro inicial
+        if (cadastroDTO.idEspecialidades() != null && !cadastroDTO.idEspecialidades().isEmpty()) {
+            cadastroDTO.idEspecialidades().forEach(idSpec -> {
+                BlackespecialidadeRepository.findById(idSpec).ifPresent(spec -> {
+                    novaEspecialista.getEspecialidades().add(spec);
+                });
+            });
+        }
 
         Especialista especialistaSalva = profesionalRepository.saveAndFlush(novaEspecialista);
         if (especialistaSalva.getIdCadastro() == null) {
@@ -95,10 +114,8 @@ public class ProfissionalService {
                 .orElse(null);
     }
 
-    // ── PUT: ATUALIZAÇÃO POLIMÓRFICA COM MAPEAMENTO DE ENDEREÇO ──
+    // ── PUT: ATUALIZAÇÃO POLIMÓRFICA CORRIGIDA (ESPECIALIDADES SINCRONIZADAS) ──
     public ProfissionalDetailDTO atualizar(Integer id, ProfissionalCadastroDTO cadastroDTO) {
-        // 1. Buscamos a entidade usando a classe base genérica para evitar
-        // ClassCastException
         Profissional profissionalExistente = profesionalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Profissional com ID " + id + " não encontrado"));
 
@@ -108,17 +125,32 @@ public class ProfissionalService {
 
         Profissional salva;
 
-        // 2. Ramificação lógica baseada na instância real do objeto vindo do banco
         if (profissionalExistente instanceof Especialista) {
             Especialista especialistaExistente = (Especialista) profissionalExistente;
 
-            // Se for Especialista, usamos o mapper para atualizar todos os dados (básicos +
-            // clínicos)
+            // 1. Atualiza propriedades textuais básicas e clínicas via Mapper
             Especialista especialistaAtualizada = dtoMapper.updateEntity(cadastroDTO, especialistaExistente);
-            salva = profesionalRepository.save(especialistaAtualizada);
+            
+            // 2. CORREÇÃO CRÍTICA: Tratamento robusto contra NullPointerException e reinicialização da lista
+            if (especialistaAtualizada.getEspecialidades() == null) {
+                especialistaAtualizada.setEspecialidades(new ArrayList<>());
+            } else {
+                especialistaAtualizada.getEspecialidades().clear();
+            }
+            
+            // Mapeia os novos IDs enviados pelo Front-end e reinsere as especialidades ativas
+            if (cadastroDTO.idEspecialidades() != null) {
+                for (Integer idSpec : cadastroDTO.idEspecialidades()) {
+                    BlackespecialidadeRepository.findById(idSpec).ifPresent(spec -> {
+                        especialistaAtualizada.getEspecialidades().add(spec);
+                    });
+                }
+            }
+
+            // CORREÇÃO CRÍTICA: Mudança de 'save' para 'saveAndFlush' para obrigar o Hibernate a sincronizar o relacionamento ManyToMany agora
+            salva = profesionalRepository.saveAndFlush(especialistaAtualizada);
         } else {
-            // Se for um Profissional comum (não-especialista), atualizamos os campos gerais
-            // permitidos
+            // Se for um Profissional comum (não-especialista)
             profissionalExistente.setNome(cadastroDTO.nome());
 
             if (cadastroDTO.cpf() != null) {
@@ -134,38 +166,29 @@ public class ProfissionalService {
                 profissionalExistente.setCelular(cadastroDTO.celular().replaceAll("[^\\d]", ""));
             }
 
-            // ── NOVA LOGICA: Mapeamento Manual do Endereço do Funcionário Comum ──
+            // Mapeamento Manual do Endereço do Funcionário Comum
             if (cadastroDTO.endereco() != null &&
                     profissionalExistente.getEnderecos() != null &&
                     !profissionalExistente.getEnderecos().isEmpty()) {
 
-                // Captura o primeiro endereço associado à coleção (equivalente ao enderecos[0]
-                // do front)
                 Endereco enderecoExistente = profissionalExistente.getEnderecos().iterator().next();
                 var enderecoDto = cadastroDTO.endereco();
 
-                if (enderecoDto.rua() != null)
-                    enderecoExistente.setRua(enderecoDto.rua());
-                if (enderecoDto.numero() != null)
-                    enderecoExistente.setNumero(enderecoDto.numero());
-                if (enderecoDto.complemento() != null)
-                    enderecoExistente.setComplemento(enderecoDto.complemento());
-                if (enderecoDto.bairro() != null)
-                    enderecoExistente.setBairro(enderecoDto.bairro());
-                if (enderecoDto.cidade() != null)
-                    enderecoExistente.setCidade(enderecoDto.cidade());
-                if (enderecoDto.estado() != null)
-                    enderecoExistente.setEstado(enderecoDto.estado());
+                if (enderecoDto.rua() != null) enderecoExistente.setRua(enderecoDto.rua());
+                if (enderecoDto.numero() != null) enderecoExistente.setNumero(enderecoDto.numero());
+                if (enderecoDto.complemento() != null) enderecoExistente.setComplemento(enderecoDto.complemento());
+                if (enderecoDto.bairro() != null) enderecoExistente.setBairro(enderecoDto.bairro());
+                if (enderecoDto.cidade() != null) enderecoExistente.setCidade(enderecoDto.cidade());
+                if (enderecoDto.estado() != null) enderecoExistente.setEstado(enderecoDto.estado());
                 if (enderecoDto.cep() != null) {
                     enderecoExistente.setCep(enderecoDto.cep().replaceAll("[^\\d]", ""));
                 }
             }
 
-            // Salva as alterações da classe base mantendo-o como Profissional genérico
-            salva = profesionalRepository.save(profissionalExistente);
+            salva = profesionalRepository.saveAndFlush(profissionalExistente);
         }
 
-        // 3. Atualiza a senha do usuário se uma nova tiver sido enviada
+        // Atualiza a senha do usuário se aplicável
         if (cadastroDTO.senhaProvisoria() != null && !cadastroDTO.senhaProvisoria().isBlank()) {
             Usuario usuario = usuarioRepository.findById(id).orElse(null);
             if (usuario != null) {
@@ -177,12 +200,11 @@ public class ProfissionalService {
         return profissionalMapper.toDetailDTO(salva);
     }
 
-    // ── DELETE: INATIVAÇÃO LÓGICA / SOFT DELETE ──
+    // ── DELETE: INATIVAÇÃO LÓGICA ──
     public void deletar(Integer id) {
         Profissional profissional = profesionalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Profissional com ID " + id + " não encontrado"));
 
-        // Altera a propriedade usando o enum oficial do seu sistema
         profissional.setStatusCadastro(StatusCadastro.INATIVO);
         profesionalRepository.save(profissional);
     }
