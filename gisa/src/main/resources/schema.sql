@@ -208,3 +208,5 @@ CREATE TABLE IF NOT EXISTS especialista_profissional (
    CONSTRAINT fk_especialidade_esp_prof FOREIGN KEY (idespecialidade) REFERENCES tab_especialidade (idespecialidade),
    CONSTRAINT fk_especialista_esp_prof FOREIGN KEY (idespecialista) REFERENCES tab_especialista (idespecialista)
 );
+
+CREATE SEQUENCE seq_pessoa START WITH 10 INCREMENT BY 1;
